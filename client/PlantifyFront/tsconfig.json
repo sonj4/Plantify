@@ -1,3 +1,16 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
-}
+    "compilerOptions": {
+      "allowJs": true,
+      "allowSyntheticDefaultImports": true,
+      "jsx": "react-native",
+      "lib": ["es6"],
+      "moduleResolution": "node",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "resolveJsonModule": true,
+      "strict": false,
+      "target": "esnext"
+    },
+    "include": ["src"]
+  }
+  

@@ -1,80 +1,117 @@
-import { StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Keyboard} from "react-native";
 import LinearGradientView from "../../../common/components/LinearGradientView";
-import { useState } from "react";
 import CustomTextInput from "../../../common/components/CustomTextInput";
 import Button from "../../../common/components/Button";
 import { globalStyles, colors } from "../../../common/global styles/GlobalStyles";
+import { Formik } from 'formik';
+import * as yup from 'yup';
+import { registerUser } from "../../../services/authService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const RegisterScreen = () => {
 
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isPasswordValid, setIsPasswordValid] = useState(true);
-    const [passwordValidationText, setPasswordValidationText] = useState('');
+const RegisterScreen = ({navigation}) => {
 
-    const validatePassword = (password) => {
-        const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-        return passwordPattern.test(password);
-    };
+    const handlePress = () => {
+        Keyboard.dismiss();
+    }
+    
 
-    const handleRegister = () => {
-        const isPasswordValid = validatePassword(password);
-        setIsPasswordValid(isPasswordValid);
-      
-        if (!isPasswordValid) {
-          setPasswordValidationText(
-            'Password must have at least 6 characters and contain at least 1 number and 1 upper case letter.'
-          );
-        } else {
-          console.log('email ', email, 'username ', username, 'password ', password);
+    const handleSubmit = async (values) => {
+        try {
+          console.log('Form data:', values);
+          const { email, username, password } = values;
+          const response = await registerUser(email, username, password, false);
+          // Handle the response, for example, store the token in AsyncStorage
+          console.log(response);
+          if (response.message === "User logged in successfully") {
+            console.log('navigate to main')
+            await AsyncStorage.setItem('userToken', response.token);
+            navigation.navigate('Main');
+          }
+        } catch (error) {
+          console.error('Registration failed:', error);
         }
       };
+
+    const handleLogin = () => {
+        navigation.navigate('Login')
+    }
+
+    const registrationSchema = yup.object().shape({
+        email: yup.string().email('Invalid email').required('Email is required'),
+        username: yup.string().required('Username is required'),
+        password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+    });
       
 
-    return (
-        <LinearGradientView>
-            <Text style={styles.title}>Unlock Your Plant Passion! 🌱 Register Today!</Text>
-            <CustomTextInput input={email} setInput={setEmail} placeholder={"Email"}/>
-            <CustomTextInput input={username} setInput={setUsername} placeholder={"Username"}/>
-            <CustomTextInput input={password} setInput={setPassword} placeholder={"Password"} type={"password"}/>
-            {!isPasswordValid && ( <Text style={styles.validationText}>{passwordValidationText}</Text> )}
-            <Button onPress={handleRegister}>
+      return (
+        <Formik
+          initialValues={{ email: '', username: '', password: '' }}
+          validationSchema={registrationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <LinearGradientView onPress={handlePress}>
+              <Text style={styles.title}>Unlock Your Plant Passion! 🌱 Register Today!</Text>
+              <CustomTextInput
+                input={values.email}
+                setInput={handleChange('email')}
+                placeholder="Email"
+              />
+              {touched.email && errors.email && <Text style={styles.validationText}>{errors.email}</Text>}
+              <CustomTextInput
+                input={values.username}
+                setInput={handleChange('username')}
+                placeholder="Username"
+              />
+              {touched.username && errors.username && <Text style={styles.validationText}>{errors.username}</Text>}
+              <CustomTextInput
+                input={values.password}
+                setInput={handleChange('password')}
+                placeholder="Password"
+                type="password"
+              />
+              {touched.password && errors.password && <Text style={styles.validationText}>{errors.password}</Text>}
+              <Button onPress={handleSubmit}>
                 <Text style={globalStyles.buttonText}>Register</Text>
-            </Button>
-            <View style={styles.container}>
-                <Text>Already have an account? </Text> 
-                <TouchableOpacity style={styles.login}><Text style={styles.login}>Log In</Text></TouchableOpacity>
-            </View>
-        </LinearGradientView>
-    )
+              </Button>
+              <View style={styles.container}>
+                <Text>Already have an account? </Text>
+                <TouchableOpacity style={styles.link} onPress={handleLogin}>
+                  <Text style={styles.link}>Log In</Text>
+                </TouchableOpacity>
+              </View>
+            </LinearGradientView>
+          )}
+        </Formik>
+      );
 }
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 18,
-        fontFamily: "Roboto-Medium",
-        color:"white",
-        margin: 10,
-        textAlign: "center"
-    },
-    login: {
-        margin: 0,
-        padding: 0,
-        color: colors.primary,
-        textDecorationLine: "underline",
-        fontWeight: "bold"
-    },
-    container: {
-        flexDirection: "row"
-    },
-    validationText: {
-        color: 'red',
-        fontSize: 12,
-        textAlign: 'center',
-        marginHorizontal: 20
-    },
+  title: {
+      fontSize: 18,
+      fontFamily: "Roboto-Medium",
+      color:"white",
+      margin: 10,
+      textAlign: "center"
+  },
+  link: {
+      margin: 0,
+      padding: 0,
+      color: colors.primary,
+      textDecorationLine: "underline",
+      fontWeight: "bold"
+  },
+  container: {
+      flexDirection: "row"
+  },
+  validationText: {
+      color: 'red',
+      fontSize: 12,
+      textAlign: 'center',
+      marginHorizontal: 20
+  },
 })
 
 export default RegisterScreen;

@@ -2,7 +2,6 @@ import React from 'react';
 import {Text,StyleSheet} from 'react-native';
 import Button from '../../common/components/Button';
 import { globalStyles, colors } from '../../common/global styles/GlobalStyles';
-import LinearGradient from 'react-native-linear-gradient';
 import LinearGradientView from '../../common/components/LinearGradientView';
 
 const SplashScreen = ({navigation}) => {
