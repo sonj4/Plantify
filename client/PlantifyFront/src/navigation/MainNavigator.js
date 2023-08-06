@@ -1,12 +1,12 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../features/home/screens/HomeScreen"; 
-import PlantsScreen from "../features/plants/screens/PlantsScreen";
 import CommunityScreen from "../features/community/screens/CommunityScreen";
 import ProfileScreen from "../features/profile/screens/ProfileScreen";
 import NotificationsScreen from "../features/notifications/screens/NotificationsScreen";
 import { StyleSheet, Text, View, Image, TouchableOpacity} from "react-native";
 import { colors } from "../common/global styles/GlobalStyles";
+import PlantNavigator from "./PlantNavigation";
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +19,7 @@ const tabItems = [
   },
   {
     name: "Plants",
-    component: PlantsScreen,
+    component: PlantNavigator,
     icon: require('../assets/icons/plant.png'),
     label: "Plants",
   },
