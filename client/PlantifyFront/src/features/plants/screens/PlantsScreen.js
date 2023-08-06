@@ -18,20 +18,21 @@ const PlantsScreen = ({navigation}) => {
     { id: 10, name: 'Plant 10' },
   ];
   
-      const renderItem = ({ item }) => {
-        return <PlantCard plant={item} />;
-      };
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>MY PLANTS: </Text>
-            <FlatList
-        data={dummyPlantsData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-      />
-        </View>
-    )
+  const renderItem = ({ item }) => { 
+    return <PlantCard plant={item} navigation={navigation}/>;
+  };
+
+  return (
+      <View style={styles.container}>
+        <Text style={styles.title}>MY PLANTS: </Text>
+        <FlatList
+          data={dummyPlantsData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+        />
+      </View>
+  )
 }
 
 const styles = StyleSheet.create({

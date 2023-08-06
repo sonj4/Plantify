@@ -1,9 +1,15 @@
 import React from "react";
-import { View, StyleSheet, Image , Text} from "react-native";
+import { View, StyleSheet, Image , Text, TouchableOpacity} from "react-native";
 import { colors } from "../../../../common/global styles/GlobalStyles";
 
-const PlantCard = ({plant}) => {
+const PlantCard = ({plant, navigation}) => {
+
+    const handlePress = () => {
+        navigation.navigate('SinglePlantScreen', { plant: plant })
+    }
+
     return (
+        <TouchableOpacity activeOpacity={0.7} onPress={() => handlePress()}>
         <View style={{
             backgroundColor: 'white',
             flexDirection: 'row',
@@ -18,12 +24,12 @@ const PlantCard = ({plant}) => {
             position: 'relative',
             paddingHorizontal: 30,
             paddingVertical: 20,
-            
             ...styles.shadow
         }}>
             <Image source={require('../../../../assets/images/plant.jpg')} style={styles.image}/>
-            <Text style={styles.name}>Plant Name</Text>
+            <Text style={styles.name}>{plant.name}</Text>
         </View>
+        </TouchableOpacity>
     )
 }
 
