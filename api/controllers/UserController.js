@@ -29,14 +29,14 @@ export const getPlants = async (req, res) => {
 };
 
 export const newPlant = async (req, res) => {
-    const { imageUrl } = req.body;
+    const { imageUrl  } = req.body;
 
     if (!imageUrl) {
         return res.status(400).json({ message: "Image URL is required." });
     }
 
     try {
-        const plant = new Plant({ owner: req.user._id, imageUrl });
+        const plant = new Plant({ owner: req.user._id, imageUrl: imageUrl });
         await plant.save();
 
         res.status(201).json(plant);

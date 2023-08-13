@@ -6,16 +6,17 @@ import adminRoutes from "./routes/admin.js"
 import notificationRoutes from "./routes/notification.js";
 import dotenv from "dotenv"
 import bodyParser from "body-parser";
+import { createModel } from 'mongoose-gridfs';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 
-// Middleware to parse JSON request body
+//parse JSON request body
 app.use(bodyParser.json());
+let Image;
 
-// Connect to the MongoDB database
 mongoose
   .connect(process.env.MONGO_DB, {
     useNewUrlParser: true,
@@ -23,7 +24,11 @@ mongoose
   })
   .then(() => {
     console.log("Connected to MongoDB");
-    // Start the server after successful database connection
+    Image = createModel({
+      modelName: 'Image',
+      connection: mongoose.connection
+    });
+
     app.listen(port, () => {
       console.log(`Server is running on ${port}`);
     });
