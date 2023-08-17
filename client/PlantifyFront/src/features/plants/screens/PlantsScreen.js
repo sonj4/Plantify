@@ -1,22 +1,37 @@
-import React from 'react';
-import { Text, View, FlatList, StyleSheet }from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { Text, View, FlatList, StyleSheet, ActivityIndicator  }from 'react-native';
 import PlantCard from '../common/components/PlantCard';
 import { colors } from '../../../common/global styles/GlobalStyles';
+import axios from '../../../utils/axios';
+import { useAuth } from '../../authentication/AuthContext';
 
 const PlantsScreen = ({navigation}) => {
+  const { token } = useAuth();
+  const [plants, setPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  console.log('token  L : ', token)
 
-  const dummyPlantsData = [
-    { id: 1, name: 'Plant 1' },
-    { id: 2, name: 'Plant 2' },
-    { id: 3, name: 'Plant 3' },
-    { id: 4, name: 'Plant 4' },
-    { id: 5, name: 'Plant 5' },
-    { id: 6, name: 'Plant 6' },
-    { id: 7, name: 'Plant 7' },
-    { id: 8, name: 'Plant 8' },
-    { id: 9, name: 'Plant 9' },
-    { id: 10, name: 'Plant 10' },
-  ];
+  useEffect(() => {
+    async function fetchPlants() {
+      try {
+        const response = await axios.get('/user/plants', {
+          headers: {
+            Authorization: token,
+          },
+        });
+        setPlants(response.data);
+        console.log(response.data)
+        console.log('dataaaa')
+      } catch (error) {
+        console.log("Error while fetching plants:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPlants();
+  }, [token]);
+  
   
   const renderItem = ({ item }) => { 
     return <PlantCard plant={item} navigation={navigation}/>;
@@ -25,12 +40,16 @@ const PlantsScreen = ({navigation}) => {
   return (
       <View style={styles.container}>
         <Text style={styles.title}>MY PLANTS: </Text>
+        {loading ? (
+        <ActivityIndicator size="large" color={colors.primary} />
+      ) : (
         <FlatList
-          data={dummyPlantsData}
+          data={plants}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item._id.toString()}
           contentContainerStyle={styles.listContainer}
         />
+      )}
       </View>
   )
 }

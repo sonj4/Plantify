@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'default-picture-url',
     },
+    
 });
 
 const User = mongoose.model("User", userSchema);

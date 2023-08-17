@@ -3,14 +3,10 @@ import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView } from 'rea
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import { colors, globalStyles } from '../../../common/global styles/GlobalStyles';
 import Button from '../../../common/components/Button';
-import axios from 'axios';
 import storage from '@react-native-firebase/storage';
-import { utils } from '@react-native-firebase/app';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomModal from '../../../common/components/CustomModal';
-
-
-const API_BASE_URL = 'http://192.168.37.117:5000/api/user/plants';
+import axios from '../../../utils/axios';
+import { useAuth } from '../../authentication/AuthContext';
 
 const HomeScreen = ({ navigation }) => {
   const camera = useRef(null);
@@ -22,6 +18,8 @@ const HomeScreen = ({ navigation }) => {
 
   const [showModal, setShowModal] = useState(false);
   const [msg, setMsg] = useState('');
+
+  const { token } = useAuth();
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -67,7 +65,7 @@ const HomeScreen = ({ navigation }) => {
         return url;
     } catch(error) {
         console.error("Error during upload:", error);
-        throw error; // re-throwing so you can catch it outside this function too
+        throw error; 
     }
 }
 
@@ -77,12 +75,15 @@ const HomeScreen = ({ navigation }) => {
     try {
       if (imageSource !== '') {
         const imageUrl = await uploadImageToFirebase(imageSource);
-        const userToken = await AsyncStorage.getItem('userToken');
+       // const userToken = await AsyncStorage.getItem('userToken');
 
-        const headers = {
-          Authorization: `${userToken}`,
-        };
-        await axios.post(API_BASE_URL, { imageUrl }, { headers });
+       console.log('home screen: ', token)
+
+        await axios.post('/user/plants', { imageUrl }, {
+          headers: {
+            Authorization: token,
+          },
+        });
 
       console.log("Image successfully uploaded and URL sent to backend");
       setMsg('Request successfully sent!');

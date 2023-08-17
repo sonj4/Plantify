@@ -1,4 +1,5 @@
 import Plant from "../models/Plant.js";
+import User from "../models/User.js";
 
 export const getPlant = async (req, res) => {
     const { plantId } = req.params;
@@ -20,7 +21,9 @@ export const getPlant = async (req, res) => {
 
 export const getPlants = async (req, res) => {
     try {
+        console.log('id backend: ',req.user._id)
         const plants = await Plant.find({ owner: req.user._id });
+        console.log(plants)
         res.status(200).json(plants);
     } catch (error) {
         console.log(error);
@@ -90,3 +93,49 @@ export const deletePlant = async (req, res) => {
         res.status(500).json({ message: "An error occurred while deleting the plant." });
     }
 };
+
+
+
+export const getUserProfile = async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id).select('-password');
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'An error occurred while fetching the user profile.' });
+    }
+  };
+  
+
+  // controllers/UserController.js
+
+export const updateUserProfile = async (req, res) => {
+    const { username, email, password } = req.body;
+  
+    try {
+      const user = await User.findById(req.user._id);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      if (username) user.username = username;
+      if (email) user.email = email;
+      if (password) user.password = password;
+  
+      await user.save();
+  
+
+      const updatedUser = { ...user.toObject(), password: undefined };
+  
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'An error occurred while updating the user profile.' });
+    }
+  };
+  

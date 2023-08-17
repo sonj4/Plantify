@@ -7,10 +7,11 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { registerUser } from "../../../services/authService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useAuth } from "../AuthContext";
 
 
 const RegisterScreen = ({navigation}) => {
+  const {updateToken} = useAuth();
 
     const handlePress = () => {
         Keyboard.dismiss();
@@ -26,7 +27,8 @@ const RegisterScreen = ({navigation}) => {
           console.log(response);
           if (response.message === "User logged in successfully") {
             console.log('navigate to main')
-            await AsyncStorage.setItem('userToken', response.token);
+            //await AsyncStorage.setItem('userToken', response.token);
+            updateToken(response.token);
             navigation.navigate('Main');
           }
         } catch (error) {

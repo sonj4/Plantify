@@ -7,10 +7,11 @@ import { globalStyles, colors } from "../../../common/global styles/GlobalStyles
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { loginUser } from "../../../services/authService";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from "../AuthContext";
 
 
 const LoginScreen = ({navigation}) => {
+  const {updateToken} = useAuth();
 
     const handleSubmit = async (values) => {
       try {
@@ -19,7 +20,9 @@ const LoginScreen = ({navigation}) => {
         const response = await loginUser(username, password);
         if (response.message === "User logged in successfully") {
           console.log('navigate to main')
-          await AsyncStorage.setItem('userToken', response.token);
+          //await AsyncStorage.setItem('userToken', response.token);
+          console.log('login screenL: ', response.token)
+          updateToken(response.token);
           navigation.navigate('Main');
         }
         console.log(response);
