@@ -26,7 +26,7 @@ const PlantCard = ({plant, navigation}) => {
             paddingVertical: 20,
             ...styles.shadow
         }}>
-            <Image source={require('../../../../assets/images/plant.jpg')} style={styles.image}/>
+            <Image source={{uri: plant.imageUrl}} style={styles.image}/>
             <Text style={styles.name}>{plant.name}</Text>
         </View>
         </TouchableOpacity>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: 100,
         height: 80,
-        resizeMode: 'contain'
+        resizeMode: 'cover'
     },
     name: {
         color: "#363636",

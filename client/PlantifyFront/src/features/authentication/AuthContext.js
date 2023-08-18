@@ -23,8 +23,15 @@ export function AuthProvider({ children }) {
     await AsyncStorage.setItem('userToken', newToken);
   };
 
+  const logout = async (callback) => {
+    setToken(null); // Clear the token from state
+    await AsyncStorage.removeItem('userToken'); // Remove the token from AsyncStorage
+    if (callback) callback(); // Execute the callback if provided
+};
+
+
   return (
-    <AuthContext.Provider value={{ token, updateToken }}>
+    <AuthContext.Provider value={{ token, updateToken, logout}}>
       {children}
     </AuthContext.Provider>
   );

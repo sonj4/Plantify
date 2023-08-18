@@ -20,8 +20,6 @@ const PlantsScreen = ({navigation}) => {
           },
         });
         setPlants(response.data);
-        console.log(response.data)
-        console.log('dataaaa')
       } catch (error) {
         console.log("Error while fetching plants:", error);
       } finally {
@@ -30,7 +28,7 @@ const PlantsScreen = ({navigation}) => {
     }
 
     fetchPlants();
-  }, [token]);
+  }, []);
   
   
   const renderItem = ({ item }) => { 

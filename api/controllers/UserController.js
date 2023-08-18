@@ -111,10 +111,9 @@ export const getUserProfile = async (req, res) => {
   };
   
 
-  // controllers/UserController.js
 
 export const updateUserProfile = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, profilePicture } = req.body;
   
     try {
       const user = await User.findById(req.user._id);
@@ -125,7 +124,7 @@ export const updateUserProfile = async (req, res) => {
   
       if (username) user.username = username;
       if (email) user.email = email;
-      if (password) user.password = password;
+      if (profilePicture) user.profilePicture = profilePicture;
   
       await user.save();
   

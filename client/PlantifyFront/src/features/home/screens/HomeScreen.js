@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView } from 'react-native';
-import { Camera, useCameraDevices } from 'react-native-vision-camera';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { colors, globalStyles } from '../../../common/global styles/GlobalStyles';
 import Button from '../../../common/components/Button';
 import storage from '@react-native-firebase/storage';
@@ -9,13 +9,7 @@ import axios from '../../../utils/axios';
 import { useAuth } from '../../authentication/AuthContext';
 
 const HomeScreen = ({ navigation }) => {
-  const camera = useRef(null);
-  const devices = useCameraDevices();
-  const device = devices.back;
-
-  const [showCamera, setShowCamera] = useState(false);
   const [imageSource, setImageSource] = useState('');
-
   const [showModal, setShowModal] = useState(false);
   const [msg, setMsg] = useState('');
 
@@ -30,54 +24,42 @@ const HomeScreen = ({ navigation }) => {
     setImageSource('');
   };
 
-  useEffect(() => {
-    async function getPermission() {
-      const newCameraPermission = await Camera.requestCameraPermission();
-      console.log(newCameraPermission);
-    }
-    getPermission();
-  }, []);
-
-  const capturePhoto = async () => {
-    if (camera.current !== null) {
-      const photo = await camera.current.takePhoto({});
-      setImageSource(photo.path);
-      setShowCamera(false);
-      console.log(photo.path);
-    }
+  const capturePhoto = () => {
+    launchCamera({ mediaType: 'photo' }, (response) => {
+      if (!response.didCancel && !response.error) {
+        let imageUri = response.uri || response.assets?.[0]?.uri;
+        setImageSource(imageUri);
+      }
+    });
   };
 
-  const handleCameraPress = () => {
-    if (device) {
-      setShowCamera(true);
-    } else {
-      console.log('Camera not available');
-    }
-  };
+  const selectImageFromGallery = async () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (!response.didCancel && !response.error) {
+        let imageUri = response.uri || response.assets?.[0]?.uri;
+        setImageSource(imageUri);
+      }
+    });
+  }
 
   async function uploadImageToFirebase(filePath) {
     const imageName = filePath.split('/').pop();
-    const reference = storage().ref('plants/'+imageName);
-    
+    const reference = storage().ref('plants/' + imageName);
+
     try {
-        await reference.putFile(filePath);
-        const url = await reference.getDownloadURL();
-        return url;
-    } catch(error) {
-        console.error("Error during upload:", error);
-        throw error; 
+      await reference.putFile(filePath);
+      const url = await reference.getDownloadURL();
+      return url;
+    } catch (error) {
+      console.error('Error during upload:', error);
+      throw error;
     }
-}
-
-
+  }
 
   const handleIdentify = async () => {
     try {
       if (imageSource !== '') {
         const imageUrl = await uploadImageToFirebase(imageSource);
-       // const userToken = await AsyncStorage.getItem('userToken');
-
-       console.log('home screen: ', token)
 
         await axios.post('/user/plants', { imageUrl }, {
           headers: {
@@ -85,60 +67,45 @@ const HomeScreen = ({ navigation }) => {
           },
         });
 
-      console.log("Image successfully uploaded and URL sent to backend");
-      setMsg('Request successfully sent!');
-      handleShowModal(); 
-    } else {
-        console.warn("No image to identify");
-        setMsg('No image to identify.')
+        console.log('Image successfully uploaded and URL sent to backend');
+        setMsg('Request successfully sent!');
+        handleShowModal();
+      } else {
+        console.warn('No image to identify');
+        setMsg('No image to identify.');
+      }
+    } catch (error) {
+      console.error('Failed to identify plant:', error);
+      setMsg('Failed to send the request.');
     }
-    } catch(error) {
-      console.error("Failed to identify plant:", error);
-      setMsg("Failed to send the request.");
-    }
-  }
-
-  if (device == null) {
-    return <Text>Camera not available</Text>;
-  }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>IDENTIFY YOUR PLANT</Text>
-      {showCamera ? (
+      {imageSource ? (
         <>
-          <Camera
-            ref={camera}
-            style={StyleSheet.absoluteFill}
-            device={device}
-            isActive={showCamera}
-            photo={true}
-          />
+          <Image style={styles.image} source={{ uri: imageSource }} resizeMode="contain" />
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.camButton} onPress={capturePhoto} />
-          </View>
-        </>
-      ) : (
-        <>
-          {imageSource !== '' ? (
-            <Image style={styles.image} source={{ uri: `file://${imageSource}` }} resizeMode="contain"/>
-          ) : null}
-
-          {imageSource !== '' && <View style={styles.buttonContainer}>
             <View style={styles.buttons}>
-              <Button onPress={() => setShowCamera(true)}>
-                <Text style={globalStyles.buttonText}>Retake</Text>
+              <Button onPress={capturePhoto}>
+                <Text style={globalStyles.buttonText}>Camera</Text>
               </Button>
-              
-              <Button onPress={() => handleIdentify()}>
+
+              <Button onPress={selectImageFromGallery}>
+                <Text style={globalStyles.buttonText}>Gallery</Text>
+              </Button>
+
+              <Button onPress={handleIdentify}>
                 <Text style={globalStyles.buttonText}>Identify</Text>
               </Button>
             </View>
-          </View>}
-          
-
-          {imageSource === '' && <TouchableOpacity style={styles.cameraIconContainer} onPress={handleCameraPress}>
+          </View>
+        </>
+      ) : (
+        <View style={styles.camerasContainer}>
+          <TouchableOpacity style={styles.cameraIconContainer} onPress={capturePhoto}>
             <Image
               source={require('../../../assets/icons/camera.png')}
               resizeMode="contain"
@@ -148,10 +115,21 @@ const HomeScreen = ({ navigation }) => {
                 tintColor: 'white',
               }}
             />
-          </TouchableOpacity>}
-        </>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cameraIconContainer} onPress={selectImageFromGallery}>
+            <Image
+              source={require('../../../assets/icons/add-image.png')}
+              resizeMode="contain"
+              style={{
+                width: 70,
+                height: 70,
+                tintColor: 'white',
+              }}
+            />
+          </TouchableOpacity>
+        </View>
       )}
-    <CustomModal showModal={showModal} handleCloseModal={handleCloseModal} message={msg} />
+      <CustomModal showModal={showModal} handleCloseModal={handleCloseModal} message={msg} />
     </ScrollView>
   );
 };
@@ -161,10 +139,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   buttonContainer: {
-    //backgroundColor: 'rgba(0,0,0,0.1)',
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
@@ -177,19 +154,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
   },
-  camButton: {
-    height: 80,
-    width: 80,
-    borderRadius: 40,
-    backgroundColor: '#B2BEB5',
-    alignSelf: 'center',
-    borderWidth: 4,
-    borderColor: 'white',
-  },
   image: {
     width: '50%',
     height: '50%',
-    //aspectRatio: 9 / 16,
   },
   cameraIconContainer: {
     justifyContent: 'center',
@@ -202,13 +169,16 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   title: {
- 
     color: colors.primary,
     fontSize: 28,
     letterSpacing: 2,
     fontFamily: 'Montserrat-Medium',
     position: 'absolute',
-    top: 50
+    top: 50,
+  },
+  camerasContainer: {
+    flexDirection: "row",
+    gap: 20
   }
 });
 
