@@ -11,7 +11,7 @@ import { useAuth } from "../AuthContext";
 
 
 const LoginScreen = ({navigation}) => {
-  const {updateToken} = useAuth();
+  const {updateToken, updateAdminStatus} = useAuth();
 
     const handleSubmit = async (values) => {
       try {
@@ -23,7 +23,13 @@ const LoginScreen = ({navigation}) => {
           //await AsyncStorage.setItem('userToken', response.token);
           console.log('login screenL: ', response.token)
           updateToken(response.token);
-          navigation.navigate('Main');
+          updateAdminStatus(response.isAdmin); 
+          //navigation.navigate('Main');
+          if(response.isAdmin) {
+            navigation.navigate('Admin');  // Navigate to admin navigation if user is an admin
+          } else {
+            navigation.navigate('Main');  // Navigate to main navigation for non-admin users
+          }
         }
         console.log(response);
       } catch(error) {

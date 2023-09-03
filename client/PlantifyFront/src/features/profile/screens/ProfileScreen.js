@@ -78,10 +78,10 @@ const ProfileScreen = () => {
                 email: editedEmail
             };
 
-            if (imageSource && imageSource !== userData.profilePicture) {
+            if (imageSource && imageSource !== userData.imageUrl) {
                 try {
                     const imageUrl = await uploadImageToFirebase(imageSource);
-                    updatedProfileData.profilePicture = imageUrl;
+                    updatedProfileData.imageUrl = imageUrl;
                 } catch (err) {
                     console.log("Error during image upload:", err);
                 }
@@ -106,13 +106,17 @@ const ProfileScreen = () => {
         });
     };
 
+    const dummyFunction = () => {
+        console.log("dummy")
+    }
+
     return (
         <View style={styles.container}>
             {userData ? (
                 <>
-                    <TouchableOpacity onPress={handleChangeProfilePicture}>
+                    <TouchableOpacity onPress={ isEditing ? handleChangeProfilePicture : dummyFunction}>
                         <Image
-                            source={imageSource ? { uri: imageSource } : (userData.profilePicture || userData.profilePicture === "default-picture-url" ? { uri: userData.profilePicture } : require('../../../assets/icons/add-image.png'))}
+                            source={imageSource ? { uri: imageSource } : (userData.imageUrl || userData.imageUrl === "default-picture-url" ? { uri: userData.imageUrl } : require('../../../assets/icons/add-image.png'))}
                             style={styles.profilePicture}
                         />
                     </TouchableOpacity>

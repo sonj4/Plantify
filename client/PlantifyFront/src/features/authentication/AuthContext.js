@@ -29,9 +29,16 @@ export function AuthProvider({ children }) {
     if (callback) callback(); // Execute the callback if provided
 };
 
+const [isAdmin, setIsAdmin] = useState(false);
+
+const updateAdminStatus = (status) => {
+  setIsAdmin(status);
+};
+
+
 
   return (
-    <AuthContext.Provider value={{ token, updateToken, logout}}>
+    <AuthContext.Provider value={{ token, updateToken, logout, isAdmin, updateAdminStatus}}>
       {children}
     </AuthContext.Provider>
   );

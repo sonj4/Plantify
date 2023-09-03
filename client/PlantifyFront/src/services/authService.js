@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://192.168.58.117:5000/api/auth';
+import axios from '../utils/axios';
 
 
 export const registerUser = async (email, username, password, isAdmin) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/register`, { email, username, password, isAdmin });
+    const response = await axios.post("/auth/register", { email, username, password, isAdmin });
     return response.data; 
   } catch (error) {
     throw error; 
@@ -14,7 +12,7 @@ export const registerUser = async (email, username, password, isAdmin) => {
 
 export const loginUser = async (username, password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login`, { username, password });
+    const response = await axios.post('/auth/login', { username, password });
     return response.data; 
   } catch (error) {
     console.log('Login failed: ', error.message);

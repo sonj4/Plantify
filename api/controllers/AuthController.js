@@ -25,11 +25,11 @@ export const registerUser = async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign({ _id: user._id, username, isAdmin }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "3h",
     });
 
     // Send the token and success message in the response
-    res.status(200).json({ token, message: "User registered successfully" });
+    res.status(200).json({ token, isAdmin: user.isAdmin, message: "User registered successfully" });
   } catch (error) {
     // Handle any error that occurred during the registration process
     res.status(500).json({ error: "Registration failed" });
@@ -63,7 +63,7 @@ export const loginUser = async (req, res) => {
     });
 
     // Send the token and success message in the response
-    res.status(200).json({ token, message: "User logged in successfully" });
+    res.status(200).json({ token, isAdmin: user.isAdmin, message: "User logged in successfully" });
   } catch (error) {
     // Handle any error that occurred during the login process
     res.status(500).json({ error: "Login failed" });

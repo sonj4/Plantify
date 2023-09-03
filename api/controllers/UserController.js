@@ -113,7 +113,7 @@ export const getUserProfile = async (req, res) => {
 
 
 export const updateUserProfile = async (req, res) => {
-    const { username, email, profilePicture } = req.body;
+    const { username, email, imageUrl } = req.body;
   
     try {
       const user = await User.findById(req.user._id);
@@ -124,7 +124,7 @@ export const updateUserProfile = async (req, res) => {
   
       if (username) user.username = username;
       if (email) user.email = email;
-      if (profilePicture) user.profilePicture = profilePicture;
+      if (imageUrl) user.imageUrl = imageUrl;
   
       await user.save();
   

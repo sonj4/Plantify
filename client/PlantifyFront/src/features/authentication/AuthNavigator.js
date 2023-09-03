@@ -4,6 +4,7 @@ import SplashScreen from "../splash/SplashScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreen";
 import MainNavigator from "../../navigation/MainNavigator";
+import AdminNavigator from "../admin/navigation/AdminNavigation";
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,7 @@ const AuthNavigator = () => {
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Main" component={MainNavigator} />
+            <Stack.Screen name="Admin" component={AdminNavigator} />
         </Stack.Navigator>
     )
 }

@@ -6,7 +6,8 @@ import {
   identifyPlant, 
   getUsers, 
   updateUser, 
-  deleteUser 
+  deleteUser,
+  createUser
 } from '../controllers/AdminController.js';
 
 import { getPlants, newPlant, updatePlant, deletePlant } from "../controllers/PlantController.js";
@@ -16,6 +17,7 @@ const router = express.Router();
 router.get('/unidentified', verifyToken, verifyAdmin, getIdentificationRequests);
 router.put('/identify/:requestId', verifyToken, verifyAdmin, identifyPlant);
 router.get('/users', verifyToken, verifyAdmin, getUsers);
+router.post('/users', verifyToken, verifyAdmin, createUser);
 router.put('/users/:userId', verifyToken, verifyAdmin, updateUser);
 router.delete('/users/:userId', verifyToken, verifyAdmin, deleteUser);
 router.get('/plants', verifyToken, verifyAdmin, getPlants);
