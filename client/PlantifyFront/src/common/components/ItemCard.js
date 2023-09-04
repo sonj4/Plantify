@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 
 const ItemCard = ({ item, navigation, screenName }) => {
+    const name = `${item.username} (ID: ${item._id})`;
 
     const handlePress = () => {
         navigation.navigate(screenName, { item: item });
@@ -14,7 +15,7 @@ const ItemCard = ({ item, navigation, screenName }) => {
             {item.imageUrl && item.imageUrl.trim() !== "" && (
                 <Image source={{ uri: item.imageUrl }} style={styles.image} />
             )}
-            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.name}>{name}</Text>
         </View>
     </TouchableOpacity>
     );

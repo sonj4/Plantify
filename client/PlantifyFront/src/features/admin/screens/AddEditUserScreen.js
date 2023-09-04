@@ -5,14 +5,23 @@ import { colors } from "../../../common/global styles/GlobalStyles";
 import Button from "../../../common/components/Button";
 import { launchImageLibrary } from 'react-native-image-picker';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { createUser, updateUser } from "../services/userService";
+import uploadImageToFirebase from "../../../common/services/uploadImageToFirebase";
+import { useAuth } from "../../authentication/AuthContext";
 
 const AddEditUserScreen = ({route, navigation}) => {
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [imageSource, setImageSource] = useState("");
 
-    const { add } = route.params;
+    const { add, onNewUser, userData } = route.params;
+    console.log("AEU: ", userData)
+
+
+    const [email, setEmail] = useState(userData ?  userData.email : "");
+    const [username, setUsername] = useState(userData? userData.username : "");
+    const [password, setPassword] = useState(userData? userData.password : "");
+    const [imageSource, setImageSource] = useState(userData ? userData.imageUrl : "");
+    const {token} = useAuth();
+
+   
 
     const selectImageFromGallery = () => {
         launchImageLibrary({ mediaType: 'photo' }, (response) => {
@@ -23,21 +32,33 @@ const AddEditUserScreen = ({route, navigation}) => {
         });
     };
 
-    async function uploadImageToFirebase(filePath) {
-        if (!filePath) return;
-
-        const imageName = filePath.split('/').pop();
-        const reference = storage().ref('users/' + imageName);
+    const handleButtonPress = async () => {
+        const imageUrl = await uploadImageToFirebase(imageSource, 'users');
+        const userData = {
+            email,
+            username,
+            password,
+            imageUrl,
+        };
+        console.log("userData: ", userData)
 
         try {
-            await reference.putFile(filePath);
-            const url = await reference.getDownloadURL();
-            return url;
+            if (add) {
+                const createdUser = await createUser(token, userData);
+                if (createdUser) {
+                    onNewUser(createdUser);
+                    navigation.goBack();
+                } else {
+                    console.error('User creation failed.');
+                }
+            } else {
+                console.log("update")
+            }
         } catch (error) {
-            console.error('Error during upload:', error);
-            throw error;
+            console.error('Error:', error);
         }
-    }
+    };
+
 
     return (
         <View style={styles.container}>
@@ -54,7 +75,7 @@ const AddEditUserScreen = ({route, navigation}) => {
             <CustomTextInput input={username} placeholder={"Username"} setInput={setUsername}/>
             <Text style={styles.label}>Password</Text>
             <CustomTextInput input={password} placeholder={"Password"} setInput={setPassword}/>
-            <Button>
+            <Button onPress={handleButtonPress}>
                 {add && <Text style={styles.buttonText}>Create User</Text>}
                 {!add && <Text style={styles.buttonText}>Update User</Text>}
             </Button>

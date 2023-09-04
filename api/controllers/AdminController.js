@@ -27,7 +27,7 @@ export const identifyPlant = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     const userId = req.params.userId;
-    const { username, email } = req.body;
+    const { username, email, imageUrl } = req.body;
 
     try {
         const user = await User.findById(userId);
@@ -36,8 +36,10 @@ export const updateUser = async (req, res) => {
             return res.status(404).json({ message: "No user found with this ID" });
         }
 
-        user.username = username;
-        user.email = email;
+        if(user.username !== username) user.username = username;
+        if(user.email !== email) user.email = email;
+        if(user.imageUrl !== imageUrl) user.imageUrl = imageUrl
+
 
         await user.save();
 
@@ -85,7 +87,7 @@ export const getUsers = async (req, res) => {
 }
 
 export const createUser = async (req, res) => {
-    const { email, username, password, isAdmin, imageUrl } = req.body;
+    const { email, username, password, imageUrl } = req.body;
 
     try {
         // Check if the user already exists
@@ -104,7 +106,6 @@ export const createUser = async (req, res) => {
             email,
             username,
             password: hashedPassword,
-            isAdmin,
             imageUrl
         });
 
