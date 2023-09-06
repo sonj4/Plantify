@@ -54,10 +54,6 @@ const UsersScreen = ({navigation}) => {
                 keyExtractor={item => item._id}
                 renderItem={({ item }) => (
                     <ItemCard 
-                        // item={{
-                        //     imageUrl: item.imageUrl,
-                        //     name: `${item.username} (ID: ${item._id})`
-                        // }}
                         item={item}
                         navigation={navigation}
                         screenName="User" 

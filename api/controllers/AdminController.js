@@ -26,8 +26,11 @@ export const identifyPlant = async (req, res) => {
 }
 
 export const updateUser = async (req, res) => {
+    console.log("WTF")
     const userId = req.params.userId;
+    console.log("BACKEND USERID UPDATE: ",userId)
     const { username, email, imageUrl } = req.body;
+    console.log("BACKEND: " + username +" "+email+" "+ imageUrl);
 
     try {
         const user = await User.findById(userId);
@@ -42,8 +45,9 @@ export const updateUser = async (req, res) => {
 
 
         await user.save();
+        console.log("BACKEND RESPONSE: ", user)
 
-        res.json(user);
+        res.status(200).json({ message: "User updated successfully", user });
     } catch (error) {
         res.status(500).json({ message: "Server Error: " + error });
     }
@@ -53,15 +57,13 @@ export const deleteUser = async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const user = await User.findById(userId);
+        const result = await User.findByIdAndDelete(userId);
 
-        if (!user) {
+        if (!result) {
             return res.status(404).json({ message: "No user found with this ID" });
         }
 
-        await user.remove();
-
-        res.json({ message: "User deleted successfully" });
+        res.status(204).json({ message: "User deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Server Error: " + error });
     }

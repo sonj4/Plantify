@@ -14,14 +14,11 @@ const AddEditUserScreen = ({route, navigation}) => {
     const { add, onNewUser, userData } = route.params;
     console.log("AEU: ", userData)
 
-
     const [email, setEmail] = useState(userData ?  userData.email : "");
     const [username, setUsername] = useState(userData? userData.username : "");
     const [password, setPassword] = useState(userData? userData.password : "");
     const [imageSource, setImageSource] = useState(userData ? userData.imageUrl : "");
-    const {token} = useAuth();
-
-   
+    const { token } = useAuth();
 
     const selectImageFromGallery = () => {
         launchImageLibrary({ mediaType: 'photo' }, (response) => {
@@ -33,17 +30,18 @@ const AddEditUserScreen = ({route, navigation}) => {
     };
 
     const handleButtonPress = async () => {
-        const imageUrl = await uploadImageToFirebase(imageSource, 'users');
-        const userData = {
-            email,
-            username,
-            password,
-            imageUrl,
-        };
-        console.log("userData: ", userData)
-
+      
         try {
             if (add) {
+                const imageUrl = await uploadImageToFirebase(imageSource, 'users');
+                const userData = {
+                    email,
+                    username,
+                    password,
+                    imageUrl,
+                };
+                console.log("userData: ", userData)
+        
                 const createdUser = await createUser(token, userData);
                 if (createdUser) {
                     onNewUser(createdUser);
@@ -52,7 +50,26 @@ const AddEditUserScreen = ({route, navigation}) => {
                     console.error('User creation failed.');
                 }
             } else {
-                console.log("update")
+                let updateData = {
+                    userId: userData._id,
+                    email,
+                    username,
+                    password,
+                };
+                console.log("RN UPDATE DATA: ", updateData)
+    
+                // Check if the image has changed
+                if (userData.imageUrl !== imageSource) {
+                    const imageUrl = await uploadImageToFirebase(imageSource, 'users');
+                    updateData.imageUrl = imageUrl;
+                }
+    
+                const updatedUser = await updateUser(token, updateData);
+                if (updatedUser) {
+                    navigation.goBack();
+                } else {
+                    console.error('User update failed.');
+                }
             }
         } catch (error) {
             console.error('Error:', error);

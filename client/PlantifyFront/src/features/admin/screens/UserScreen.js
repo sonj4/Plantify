@@ -2,22 +2,31 @@ import React from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
 import { colors } from "../../../common/global styles/GlobalStyles";
 import Button from "../../../common/components/Button";
+import { deleteUser } from "../services/userService";
+import { useAuth } from "../../authentication/AuthContext";
 
 const UserScreen = ({route, navigation}) => {
 
     const {item} = route.params;
-    console.log(item)
+    const { token } = useAuth();
+    console.log("USER SCREEN:" ,item)
 
     const handleEdit = () => {
         navigation.navigate("AddEditUser", {add: false, userData: item})
     }
 
     const handlePlants = () => {
-        
+        navigation.navigate("Plants", {userData: item})
     }
 
-    const handleDelete = () => {
-        
+    const handleDelete = async () => {
+        try {
+            const res = await deleteUser(token, item._id);
+            if (res) console.log("FUCKING DELETED")
+            else console.log("I DONT THINK SO")
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (

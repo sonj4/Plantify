@@ -5,6 +5,7 @@ import UsersScreen from "../screens/UsersScreen";
 import UserScreen from "../screens/UserScreen";
 import { colors } from "../../../common/global styles/GlobalStyles";
 import AddEditUserScreen from "../screens/AddEditUserScreen";
+import PlantsScreen from "../screens/PlantsScreen";
 
 const UsersNavigator = () => {
     return (
@@ -30,6 +31,16 @@ const UsersNavigator = () => {
                     headerTintColor: 'white',
                     headerTitle: null
                 }}/>
+                <Stack.Screen name="Plants" component={PlantsScreen}  options={{
+                    headerShown: true, 
+                    headerStyle: {
+                        backgroundColor: colors.primary,
+                        borderBottomLeftRadius: 50,
+                        borderBottomRightRadius: 50
+                    },
+                    headerTintColor: 'white',
+                    headerTitle: null
+                }} />
         </Stack.Navigator>
     )
 }
