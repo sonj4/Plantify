@@ -83,3 +83,23 @@ export const deleteUser = async (token, userId) => {
         throw error;
     }
 }
+
+//USER PLANTS 
+
+export const getPlants = async (token, userId) => {
+    try {
+        const response = await axios.get('/admin/plants', {
+            headers: {
+                Authorization: token
+            }
+        })
+
+        if(response.status === 200) {
+            const filteredPlants = response.data.filter((plant) => plant.owner === userId);
+            return filteredPlants;
+        }
+    } catch (error) {
+        console.error("Error while deleting user: ", error);
+        throw error;
+    }
+}

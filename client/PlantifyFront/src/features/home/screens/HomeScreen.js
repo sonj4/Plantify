@@ -25,12 +25,24 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const capturePhoto = () => {
+    console.log("wtf")
+    // launchCamera({ mediaType: 'photo' }, (response) => {
+    //   if (!response.didCancel && !response.error) {
+    //     let imageUri = response.uri || response.assets?.[0]?.uri;
+    //     setImageSource(imageUri);
+    //   }
+    // });
     launchCamera({ mediaType: 'photo' }, (response) => {
-      if (!response.didCancel && !response.error) {
-        let imageUri = response.uri || response.assets?.[0]?.uri;
-        setImageSource(imageUri);
+      console.log(response); // Log the entire response object
+      if (response.error) {
+         console.error("Camera Error:", response.error);
       }
-    });
+      if (!response.didCancel && !response.error) {
+         let imageUri = response.uri || response.assets?.[0]?.uri;
+         setImageSource(imageUri);
+      }
+   });
+   
   };
 
   const selectImageFromGallery = async () => {

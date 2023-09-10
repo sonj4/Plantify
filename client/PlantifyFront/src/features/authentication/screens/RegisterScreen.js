@@ -22,10 +22,11 @@ const RegisterScreen = ({navigation}) => {
         try {
           console.log('Form data:', values);
           const { email, username, password } = values;
-          const response = await registerUser(email, username, password, false);
+          const isAdmin = false;
+          const response = await registerUser(email, username, password, isAdmin);
           // Handle the response, for example, store the token in AsyncStorage
           console.log(response);
-          if (response.message === "User logged in successfully") {
+          if (response.message === "User registered successfully") {
             console.log('navigate to main')
             //await AsyncStorage.setItem('userToken', response.token);
             updateToken(response.token);
