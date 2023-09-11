@@ -4,6 +4,8 @@ import { colors } from '../../../common/global styles/GlobalStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from '../../../utils/axios'
 import { useAuth } from '../../authentication/AuthContext';
+import Button from '../../../common/components/Button';
+import openMap from 'react-native-open-maps';
 
 const SinglePlantScreen = ({ route }) => {
   const { token } = useAuth();
@@ -30,6 +32,10 @@ const SinglePlantScreen = ({ route }) => {
         // You can also show a toast message or update your UI here
       }
     };
+    function openUserLocation(x, y) {
+      console.log("X: ", x, "Y: ",y)
+      openMap({ latitude: x, longitude: y });
+    }
     
   return (
     <SafeAreaView style={styles.container}>
@@ -50,6 +56,7 @@ const SinglePlantScreen = ({ route }) => {
         </Text>
       </ScrollView>
     </ScrollView>
+    {plant.identificationStatus === 'Identified' ? <Button onPress={() => openUserLocation( plant.locations[0].coordinates[1],plant.locations[0].coordinates[0])}><Text>Open Map</Text></Button> : <Text></Text>}
     </SafeAreaView>
   );
 };

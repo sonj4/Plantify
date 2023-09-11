@@ -2,7 +2,11 @@ import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 
 const ItemCard = ({ item, navigation, screenName }) => {
-    const name = `${item.username} (ID: ${item._id})`;
+    let name = '';
+    if (!item.username) {
+        name = `${item.name} (ID: ${item._id})`;
+    }
+    else name = `${item.username} (ID: ${item._id})`;
 
     const handlePress = () => {
         navigation.navigate(screenName, { item: item });

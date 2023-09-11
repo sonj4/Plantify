@@ -10,7 +10,7 @@ import {
   createUser
 } from '../controllers/AdminController.js';
 
-import { getPlants, newPlant, updatePlant, deletePlant } from "../controllers/PlantController.js";
+import { getPlants, newPlant, updatePlant, deletePlant, identifyPlantAdmin } from "../controllers/PlantController.js";
 
 const router = express.Router();
 
@@ -22,6 +22,7 @@ router.put('/users/:userId', verifyToken, verifyAdmin, updateUser);
 router.delete('/users/:userId', verifyToken, verifyAdmin, deleteUser);
 router.get('/plants', verifyToken, verifyAdmin, getPlants);
 router.post('/plants', verifyToken, verifyAdmin, newPlant);
+router.put('/identify/plants/:plantId', verifyToken, verifyAdmin, identifyPlantAdmin);
 router.put('/plants/:plantId', verifyToken, verifyAdmin, updatePlant);
 router.delete('/plants/:plantId', verifyToken, verifyAdmin, deletePlant);
 

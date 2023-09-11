@@ -60,6 +60,55 @@ export const updatePlant = async (req, res) => {
     }
 };
 
+// export const identfiyPlantAdmin = async (req, res) => {
+//     const {plantId} = req.params;
+//     const {name, careInstructions, longitude, latitude} = req.body;
+
+
+//     try {
+//         const plant = await Plant.findById(plantId);
+
+//         if (!plant) {
+//             return res.status(404).json({ message: "Plant not found." });
+//         }
+
+//         plant.name = name;
+//         plant.careInstructions = careInstructions;
+        
+
+//     } catch(error) {
+//         console.log(error);
+//         res.status(500).json({ message: "An error occurred while identifying the plant." });
+//     }
+// }
+
+export const identifyPlantAdmin = async (req, res) => {
+    const { plantId } = req.params;
+    const { name, careInstructions, longitude, latitude } = req.body;
+
+    try {
+        const plant = await Plant.findById(plantId);
+
+        if (!plant) {
+            return res.status(404).json({ message: "Plant not found." });
+        }
+
+        plant.name = name;
+        plant.careInstructions = careInstructions;
+        plant.locations = [{ type: 'Point', coordinates: [parseFloat(longitude), parseFloat(latitude)] }];
+        plant.identificationStatus = 'Identified';
+
+        await plant.save();
+
+        res.status(200).json(plant);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "An error occurred while identifying the plant." });
+    }
+}
+
+
 export const deletePlant = async (req, res) => {
     const { plantId } = req.params;
 

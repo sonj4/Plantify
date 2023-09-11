@@ -29,6 +29,20 @@ const plantSchema = new mongoose.Schema({
     },
     identifiedAt: {
         type: Date,
+    }, 
+    locations: {
+        type: [{
+            type: {
+                type: String, // Don't do `{ location: { type: String } }`
+                enum: ['Point'], // 'location.type' must be 'Point'
+                required: true
+            },
+            coordinates: {
+                type: [Number], // [longitude, latitude]
+                required: true
+            }
+        }],
+        index: '2dsphere' // Create a geospatial index on the 'locations' field
     }
 });
 
