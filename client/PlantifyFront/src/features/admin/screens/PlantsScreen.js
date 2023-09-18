@@ -40,7 +40,7 @@ const PlantsScreen = ({route, navigation}) => {
     }, []);
 
     const handlePress = () => {
-
+        console.log('test')
     }
 
     return (

@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { colors, globalStyles } from '../../../common/global styles/GlobalStyles';
+import React, {useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Image,
+  ScrollView,
+} from 'react-native';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {colors, globalStyles} from '../../../common/global styles/GlobalStyles';
 import Button from '../../../common/components/Button';
 import storage from '@react-native-firebase/storage';
 import CustomModal from '../../../common/components/CustomModal';
 import axios from '../../../utils/axios';
-import { useAuth } from '../../authentication/AuthContext';
+import {useAuth} from '../../authentication/AuthContext';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({navigation}) => {
   const [imageSource, setImageSource] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const { token } = useAuth();
+  const {token} = useAuth();
 
   const handleShowModal = () => {
-    setShowModal(true);
+    setShowModal(true); 
   };
 
   const handleCloseModal = () => {
@@ -25,34 +32,26 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const capturePhoto = () => {
-    console.log("wtf")
-    // launchCamera({ mediaType: 'photo' }, (response) => {
-    //   if (!response.didCancel && !response.error) {
-    //     let imageUri = response.uri || response.assets?.[0]?.uri;
-    //     setImageSource(imageUri);
-    //   }
-    // });
-    launchCamera({ mediaType: 'photo' }, (response) => {
-      console.log(response); // Log the entire response object
+    launchCamera({mediaType: 'photo'}, response => {
+      console.log(response); 
       if (response.error) {
-         console.error("Camera Error:", response.error);
+        console.error('Camera Error:', response.error);
       }
-      if (!response.didCancel && !response.error) {
-         let imageUri = response.uri || response.assets?.[0]?.uri;
-         setImageSource(imageUri);
-      }
-   });
-   
-  };
-
-  const selectImageFromGallery = async () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (!response.didCancel && !response.error) {
         let imageUri = response.uri || response.assets?.[0]?.uri;
         setImageSource(imageUri);
       }
     });
-  }
+  };
+
+  const selectImageFromGallery = async () => {
+    launchImageLibrary({mediaType: 'photo'}, response => {
+      if (!response.didCancel && !response.error) {
+        let imageUri = response.uri || response.assets?.[0]?.uri;
+        setImageSource(imageUri);
+      }
+    });
+  };
 
   async function uploadImageToFirebase(filePath) {
     const imageName = filePath.split('/').pop();
@@ -73,11 +72,15 @@ const HomeScreen = ({ navigation }) => {
       if (imageSource !== '') {
         const imageUrl = await uploadImageToFirebase(imageSource);
 
-        await axios.post('/user/plants', { imageUrl }, {
-          headers: {
-            Authorization: token,
+        await axios.post(
+          '/user/plants',
+          {imageUrl},
+          {
+            headers: {
+              Authorization: token,
+            },
           },
-        });
+        );
 
         console.log('Image successfully uploaded and URL sent to backend');
         setMsg('Request successfully sent!');
@@ -97,7 +100,11 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.title}>IDENTIFY YOUR PLANT</Text>
       {imageSource ? (
         <>
-          <Image style={styles.image} source={{ uri: imageSource }} resizeMode="contain" />
+          <Image
+            style={styles.image}
+            source={{uri: imageSource}}
+            resizeMode="contain"
+          />
 
           <View style={styles.buttonContainer}>
             <View style={styles.buttons}>
@@ -117,7 +124,9 @@ const HomeScreen = ({ navigation }) => {
         </>
       ) : (
         <View style={styles.camerasContainer}>
-          <TouchableOpacity style={styles.cameraIconContainer} onPress={capturePhoto}>
+          <TouchableOpacity
+            style={styles.cameraIconContainer}
+            onPress={capturePhoto}>
             <Image
               source={require('../../../assets/icons/camera.png')}
               resizeMode="contain"
@@ -128,7 +137,9 @@ const HomeScreen = ({ navigation }) => {
               }}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cameraIconContainer} onPress={selectImageFromGallery}>
+          <TouchableOpacity
+            style={styles.cameraIconContainer}
+            onPress={selectImageFromGallery}>
             <Image
               source={require('../../../assets/icons/add-image.png')}
               resizeMode="contain"
@@ -141,7 +152,11 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
-      <CustomModal showModal={showModal} handleCloseModal={handleCloseModal} message={msg} />
+      <CustomModal
+        showModal={showModal}
+        handleCloseModal={handleCloseModal}
+        message={msg}
+      />
     </ScrollView>
   );
 };
@@ -189,9 +204,9 @@ const styles = StyleSheet.create({
     top: 50,
   },
   camerasContainer: {
-    flexDirection: "row",
-    gap: 20
-  }
+    flexDirection: 'row',
+    gap: 20,
+  },
 });
 
 export default HomeScreen;

@@ -2,10 +2,10 @@ import React from "react";
 import { View, StyleSheet, Image , Text, TouchableOpacity} from "react-native";
 import { colors } from "../../../../common/global styles/GlobalStyles";
 
-const PlantCard = ({plant, navigation}) => {
+const PlantCard = ({plant, navigation, onPlantDeleted}) => {
 
     const handlePress = () => {
-        navigation.navigate('SinglePlantScreen', { plant: plant })
+        navigation.navigate('SinglePlantScreen', { plant: plant, onPlantDeleted: onPlantDeleted })
     }
 
     return (

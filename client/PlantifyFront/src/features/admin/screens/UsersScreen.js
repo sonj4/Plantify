@@ -15,6 +15,15 @@ const UsersScreen = ({navigation}) => {
     const handleNewUser = (newUser) => {
         setUsers((prevUsers) => [...prevUsers, newUser]);
     };
+
+    const handleUpdatedUser = (updatedUser) => {
+        setUsers((prevUsers) => 
+            prevUsers.map((user) => 
+                user._id === updatedUser._id ? updatedUser : user
+            )
+        );
+    };
+    
     
     const onRefresh = async () => {
         setRefreshing(true);
@@ -41,6 +50,10 @@ const UsersScreen = ({navigation}) => {
         loadUsers();
     }, []);
 
+    const removeUserById = id => {
+        setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
+      };
+
     const handlePress = () => {
         navigation.navigate("AddEditUser", {add: true, onNewUser: handleNewUser});
         console.log(" test")
@@ -57,6 +70,7 @@ const UsersScreen = ({navigation}) => {
                         item={item}
                         navigation={navigation}
                         screenName="User" 
+                        onUserDelete={removeUserById}
                     />
                 )}
                 refreshControl={
