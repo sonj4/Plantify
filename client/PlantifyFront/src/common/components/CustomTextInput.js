@@ -13,6 +13,7 @@ const CustomTextInput = ({input, setInput, placeholder, type}) => {
             value={input}
             style={styles.input}
             secureTextEntry={type === 'password'}
+            placeholderTextColor="grey"
         />
     );
 }

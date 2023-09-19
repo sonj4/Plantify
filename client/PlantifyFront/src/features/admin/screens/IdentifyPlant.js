@@ -46,6 +46,9 @@ const IdentiftyPlant = ({ route, navigation }) => {
                 console.log('Plant successfully identified and updated.');
                 setMsg('Plant successfully identified and updated.')
                 handleShowModal();
+                setTimeout(() => {
+                    navigation.navigate('Plants');
+                }, 2000);
                 
                 // Optionally, navigate or show a success message to the admin
             }
@@ -66,6 +69,7 @@ const IdentiftyPlant = ({ route, navigation }) => {
                     value={name}
                     onChangeText={setName}
                     placeholder="Enter plant name"
+                    placeholderTextColor="grey"
                 />
 
                 <Text style={styles.label}>Care Instructions:</Text>
@@ -74,6 +78,7 @@ const IdentiftyPlant = ({ route, navigation }) => {
                     value={careInstructions}
                     onChangeText={setCareInstructions}
                     placeholder="Enter care instructions"
+                    placeholderTextColor="grey"
                     multiline
                 />
 
@@ -84,6 +89,7 @@ const IdentiftyPlant = ({ route, navigation }) => {
                     onChangeText={setLongitude}
                     placeholder="Enter longitude"
                     keyboardType="numeric"
+                    placeholderTextColor="grey"
                 />
 
                 <Text style={styles.label}>Latitude:</Text>
@@ -93,6 +99,7 @@ const IdentiftyPlant = ({ route, navigation }) => {
                     onChangeText={setLatitude}
                     placeholder="Enter latitude"
                     keyboardType="numeric"
+                    placeholderTextColor="grey"
                 />
 
                 <Button onPress={handleSubmit}> 

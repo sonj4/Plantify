@@ -10,31 +10,37 @@ export const getPlants = async (req, res) => {
     }
 };
 
-export const newPlant = async (req, res) => {
-    const { name, imageUrl } = req.body;
 
-    // Ensure both name and imageUrl are provided
-    if (!name || !imageUrl) {
-        return res.status(400).json({ message: "Name and image URL are required." });
+
+export const newPlant = async (req, res) => {
+    const { userId, name, instructions, longitude, latitude, imageUrl } = req.body;
+
+    if (!name || !imageUrl || !longitude || !latitude || !instructions) {
+        return res.status(400).json({ message: "All fields are required." });
     }
 
     try {
-        // Create a new plant document in the database
         const plant = new Plant({
             name,
-            imageUrl
+            imageUrl,
+            careInstructions: instructions,
+            locations: [{ type: 'Point', coordinates: [parseFloat(longitude), parseFloat(latitude)] }],
+            identificationStatus: 'Identified',
+            owner: userId 
         });
 
-        // Save the new plant document
         await plant.save();
-
         res.status(201).json(plant);
 
     } catch (error) {
         console.log(error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: error.message });
+        }
         res.status(500).json({ message: "An error occurred while creating the plant." });
     }
 };
+
 
 export const updatePlant = async (req, res) => {
     const { plantId } = req.params;
@@ -60,27 +66,7 @@ export const updatePlant = async (req, res) => {
     }
 };
 
-// export const identfiyPlantAdmin = async (req, res) => {
-//     const {plantId} = req.params;
-//     const {name, careInstructions, longitude, latitude} = req.body;
 
-
-//     try {
-//         const plant = await Plant.findById(plantId);
-
-//         if (!plant) {
-//             return res.status(404).json({ message: "Plant not found." });
-//         }
-
-//         plant.name = name;
-//         plant.careInstructions = careInstructions;
-        
-
-//     } catch(error) {
-//         console.log(error);
-//         res.status(500).json({ message: "An error occurred while identifying the plant." });
-//     }
-// }
 
 export const identifyPlantAdmin = async (req, res) => {
     const { plantId } = req.params;

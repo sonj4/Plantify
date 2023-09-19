@@ -13,6 +13,7 @@ import {colors} from '../../../common/global styles/GlobalStyles';
 import axios from '../../../utils/axios';
 import {useAuth} from '../../authentication/AuthContext';
 import {getPlants} from '../../../services/userServices';
+import {useFocusEffect} from '@react-navigation/native';
 
 const PlantsScreen = ({navigation}) => {
   const {token} = useAuth();
@@ -20,19 +21,25 @@ const PlantsScreen = ({navigation}) => {
   const [refreshing, setRefreshing] = useState(false);
 
   console.log('token  L : ', token);
+  const loadPlants = async () => {
+    try {
+      const fetchedPlants = await getPlants(token);
+      setPlants(fetchedPlants);
+    } catch (error) {
+      console.error('Error loading plants:', error);
+    }
+  };
 
   useEffect(() => {
-    const loadPlants = async () => {
-      try {
-        const fetchedPlants = await getPlants(token);
-        setPlants(fetchedPlants);
-      } catch (error) {
-        console.error('Error loading plants:', error);
-      }
-    };
-
     loadPlants();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadPlants();
+      return () => {}; // cleanup if needed
+    }, []),
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);

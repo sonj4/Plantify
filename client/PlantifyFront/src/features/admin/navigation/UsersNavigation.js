@@ -8,6 +8,7 @@ import AddEditUserScreen from "../screens/AddEditUserScreen";
 import PlantsScreen from "../screens/PlantsScreen";
 import SinglePlantScreen from "../screens/SinglePlantScreen";
 import IdentiftyPlant from "../screens/IdentifyPlant";
+import AddEditPlantScreen from "../screens/AddEditPlantScreen";
 
 const defaultScreenOptions = {
     headerShown: true,
@@ -29,6 +30,7 @@ const UsersNavigator = () => {
             <Stack.Screen name="Plants" component={PlantsScreen} options={{ ...defaultScreenOptions }} />
             <Stack.Screen name="SinglePlant" component={SinglePlantScreen} options={{ ...defaultScreenOptions }} />
             <Stack.Screen name="IdentifyPlant" component={IdentiftyPlant} options={{ ...defaultScreenOptions }} />
+            <Stack.Screen name="AddEditPlantScreen" component={AddEditPlantScreen} options={{ ...defaultScreenOptions }} />
         </Stack.Navigator>
     )
 }
