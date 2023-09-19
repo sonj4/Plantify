@@ -23,24 +23,23 @@ export const createPlant = async (token, plantData) => {
   };
   
 
-export const updatePlant = async (token, userData) =>{
-    console.log("Edit user: ", userData);
+  export const updatePlant = async (token, plantData) => {
     try {
-        const response = await axios.put(`/admin/users/${userData.userId}`, userData, {
+        const response = await axios.put(`/admin/plants/${plantData.plantId}`, plantData, {
             headers: {
                 Authorization: token
             }
         })
-        if (response.status === 200 || response.status === 204) {
-            console.log('Frontend User updated:', response.data.user);
-            return response.data.user;
+        if (response.status === 200) {
+            console.log('Plant updated:', response.data);
+            return response.data;
         } else {
-            console.error('Error updating user:', response.data.message);
+            console.error('Error updating plant:', response.data.message);
             throw new Error(response.data.message);
         }
         
     } catch(error) {
-        console.error("Error updating user: ", error);
+        console.error("Error updating plant: ", error);
         throw error;
     }
 }

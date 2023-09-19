@@ -43,8 +43,9 @@ export const newPlant = async (req, res) => {
 
 
 export const updatePlant = async (req, res) => {
+    console.log('test')
     const { plantId } = req.params;
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, instructions, longitude, latitude } = req.body;
 
     try {
         const plant = await Plant.findById(plantId);
@@ -55,7 +56,11 @@ export const updatePlant = async (req, res) => {
 
         if (name) plant.name = name;
         if (imageUrl) plant.imageUrl = imageUrl;
-
+        if (instructions) plant.careInstructions = instructions;
+        if (longitude && latitude) {
+            plant.locations = [{ type: 'Point', coordinates: [parseFloat(longitude), parseFloat(latitude)] }];
+        }
+        console.log(plant)
         await plant.save();
 
         res.status(200).json(plant);
@@ -65,6 +70,7 @@ export const updatePlant = async (req, res) => {
         res.status(500).json({ message: "An error occurred while updating the plant." });
     }
 };
+
 
 
 

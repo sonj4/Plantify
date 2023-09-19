@@ -67,6 +67,10 @@ const SinglePlantScreen = ({route, navigation}) => {
     }
   };
 
+  const handleEdit = () => {
+    navigation.navigate('AddEditPlantScreen', {add: false, plantData: item})
+  }
+
   return (
     <View style={styles.container}>
       {item.identificationStatus === 'Unidentified' ? (
@@ -104,6 +108,7 @@ const SinglePlantScreen = ({route, navigation}) => {
                 style={styles.deleteIcon}
               />
             </TouchableOpacity>
+            <Button onPress={handleEdit}><Text>Edit Plant</Text></Button>
           </View>
           <CustomModal
             handleCloseModal={handleCloseModal}

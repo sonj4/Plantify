@@ -8,35 +8,43 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import CustomModal from '../../../common/components/CustomModal';
 import uploadImageToFirebase from '../../../common/services/uploadImageToFirebase';
 import {useAuth} from '../../authentication/AuthContext';
-import { createPlant } from '../services/plantService';
+import {createPlant, updatePlant} from '../services/plantService';
 
 const AddEditPlantScreen = ({route, navigation}) => {
-    const [msg, setMsg] = useState('');
-    const [showModal, setShowModal] = useState(false);
-    const handleShowModal = () => {
-        setShowModal(true); 
-      };
-    
-      const handleCloseModal = () => {
-        setShowModal(false);
-        
-      };
+  const [msg, setMsg] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
 
-    const userData = route.params?.userData;
-    const add = route.params.add;
-    const plantData=route.params?.plantData;
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const userData = route.params?.userData;
+  const add = route.params.add;
+  const plantData = route.params?.plantData;
   console.log('AEU: ', plantData);
 
-  const [name, setName] = useState(plantData ? plantData.email : '');
+  const [name, setName] = useState(plantData ? plantData.name : '');
   const [instructions, setInstructions] = useState(
-    plantData ? plantData.username : '',
+    plantData ? plantData.careInstructions : '',
   );
-  const [longitude, setLongitude] = useState(plantData ? plantData.password : 0);
-  const [latitude, setLatitude] = useState(plantData ? plantData.password : 0);
+  const [longitude, setLongitude] = useState(
+    plantData && plantData.locations && plantData.locations[0]
+      ? plantData.locations[0].coordinates[0].toString()
+      : '',
+  );
+  const [latitude, setLatitude] = useState(
+    plantData && plantData.locations && plantData.locations[0]
+      ? plantData.locations[0].coordinates[1].toString()
+      : '',
+  );
   const [imageSource, setImageSource] = useState(
     plantData ? plantData.imageUrl : '',
   );
   const {token} = useAuth();
+  console.log(longitude, latitude);
 
   const selectImageFromGallery = () => {
     launchImageLibrary({mediaType: 'photo'}, response => {
@@ -52,46 +60,50 @@ const AddEditPlantScreen = ({route, navigation}) => {
       if (add) {
         const imageUrl = await uploadImageToFirebase(imageSource, 'plants');
         const plantData = {
-            userId: userData._id,
+          userId: userData._id,
           name,
           instructions,
-          longitude,
-          latitude,
+          longitude: parseFloat(longitude),
+          latitude: parseFloat(latitude),
           imageUrl,
         };
         console.log('plantData: ', plantData);
 
         const createdPlant = await createPlant(token, plantData);
         if (createdPlant) {
-            setMsg("Created Plant Successfully!")
-            handleShowModal();
-            setTimeout(() => {
-                navigation.goBack();
-            }, 2000);
-          
+          setMsg('Created Plant Successfully!');
+          handleShowModal();
+          setTimeout(() => {
+            navigation.goBack();
+          }, 2000);
         } else {
           console.error('Plant creation failed.');
         }
       } else {
-        // let updateData = {
-        //   userId: plantData._id,
-        //   email,
-        //   username,
-        //   password,
-        // };
-        // console.log('RN UPDATE DATA: ', updateData);
+        const updatedPlantData = {
+          plantId: plantData._id,
+          name,
+          instructions,
+          longitude,
+          latitude,
+         // imageUrl,
+        };
 
         // if (plantData.imageUrl !== imageSource) {
         //   const imageUrl = await uploadImageToFirebase(imageSource, 'plants');
-        //   updateData.imageUrl = imageUrl;
+        //   updatedPlantData.imageUrl = imageUrl;
         // }
 
-        // const updatedUser = await updateUser(token, updateData);
-        // if (updatedUser) {
-        //   navigation.goBack();
-        // } else {
-        //   console.error('User update failed.');
-        // }
+        const updatedPlant = await updatePlant(token, updatedPlantData);
+        if (updatedPlant) {
+          setMsg('Plant Updated Successfully!');
+          handleShowModal();
+          setTimeout(() => {
+            navigation.navigate('Plants');
+          }, 2000);
+        } else {
+          console.error('Plant update failed.');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -113,8 +125,9 @@ const AddEditPlantScreen = ({route, navigation}) => {
       </TouchableOpacity>
       <Text style={styles.label}>Name</Text>
       <CustomTextInput
+        value={name}
         input={name}
-        placeholder={'Name'}
+        // placeholder={'Name'}
         setInput={setName}
       />
       <Text style={styles.label}>Care Inctructions</Text>
